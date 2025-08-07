@@ -33,6 +33,7 @@ signature = infer_signature(train_x, train_y)
 
 # Before you run this check your MLFLOW Tracking Server Status before
 client = MlflowClient(tracking_uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 
 def create_and_train_model(learning_rate, momentum, epochs=10):
@@ -195,9 +196,9 @@ with mlflow.start_run(run_name="hyperparameter-sweep"):
     # Run optimization
     trials = Trials()
     best_params = fmin(
-        fn=objective,
-        space=search_space,
-        algo=tpe.suggest,
+        fn=objective,  # lambda params: objective(params, fixed_param=42) in case you want more constant params
+        space=search_space,  # space will be send as first argument for fn func
+        algo=tpe.suggest,  # algo to choose sample of hyperparameters
         max_evals=15,
         trials=trials,
         verbose=True,
